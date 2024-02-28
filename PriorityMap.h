@@ -15,17 +15,17 @@ using std::vector, std::unordered_map;
 template <typename Key, typename Element>
 class PriorityMap {
 private:
-    const Key key;
     const size_t level;
+    const vector<Key> key;
     unordered_map<Key, PriorityMap*> pmaps;
     vector<Element> elements;
 
 public:
     PriorityMap()
-        : key(""), level(0) {       }
+        : level(0) {     } 
         
-    PriorityMap(Key _key, size_t _level)
-        : key(_key), level(_level) {       }
+    PriorityMap(size_t _level, vector<Key> _key)
+        : level(_level), key(_key) {       }
 
     ~PriorityMap();
 
@@ -52,6 +52,8 @@ public:
             : owner(nullptr), next_itr(nullptr) {       }
 
         ~Iterator();
+
+        const vector<Key>& get_key() const;
 
         Element& operator*() const;
 
@@ -98,7 +100,8 @@ void PriorityMap<Key, Element>::push(vector<Key> &label, Element elmt) {
     } else if (pmaps.count(label[level])) { // next pmap exists
         pmaps[label[level]]->push(label, elmt);
     } else { // create new pmap
-        pmaps[label[level]] = new PriorityMap(label[level], level + 1);
+        vector<Key> next_vector(label.begin(), label.begin() + level + 1);
+        pmaps[label[level]] = new PriorityMap(level + 1, next_vector);
         pmaps[label[level]]->push(label, elmt);
     }
 }
@@ -195,6 +198,11 @@ PriorityMap<Key, Element>::Iterator::~Iterator() {
         delete next_itr;
         next_itr = nullptr;
     }
+}
+
+template <typename Key, typename Element>
+const vector<Key>& PriorityMap<Key, Element>::Iterator::get_key() const {
+    return next_itr ? next_itr->get_key() : owner->key;
 }
 
 template <typename Key, typename Element>

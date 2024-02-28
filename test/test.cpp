@@ -68,6 +68,30 @@ void print(bool verbose, string message, string expected, string actual) {
         cout << "\tActual:   " << actual << endl;
     }
 }
+string to_print(vector<string> message) {
+    string to_return = "{ ";
+    for (size_t i = 0; i != message.size(); ++i) {
+        to_return += message[i];
+
+        if (i != message.size() - 1)
+            to_return += ", ";
+    }
+    to_return += " }";
+    return to_return;
+}
+void print(bool verbose, string message, vector<string> expected, vector<string> actual) {
+    if (expected != actual) {
+        cout << "FAIL ";
+        cout << message << endl;
+        cout << "\tExpected: " << to_print(expected) << endl;
+        cout << "\tActual:   " << to_print(actual) << endl;
+    } else if (verbose) {
+        cout << "SUCCESS: ";
+        cout << message << endl;
+        cout << "\tExpected: " << to_print(expected) << endl;
+        cout << "\tActual:   " << to_print(actual) << endl;
+    }
+}
 void print(bool verbose, string message, bool expected, bool actual) {
     if (expected != actual) {
         cout << "FAIL ";
@@ -81,6 +105,7 @@ void print(bool verbose, string message, bool expected, bool actual) {
         cout << "\tActual:   " << actual << endl;
     }
 }
+
 
 void push(bool v) {
     vector<Instance> push_test = {
@@ -444,6 +469,35 @@ void iterator_assignment(bool v) {
     pmap.clear();
 }
 
+void iterator_gets(bool v) {
+    PriorityMap<string, string> pmap;
+
+    
+    pmap.push(test[0].label, test[0].element);
+    print(v, "1: iterator_gets(): same label", test[0].label, pmap.begin().get_key());
+    pmap.clear();
+    
+    vector<string> vlabel = {label1, label2};
+    pmap.push(test[12].label, test[12].element); // 1
+    pmap.push(test[1].label, test[1].element); // 1 3 2
+    pmap.push(test[6].label, test[6].element); // 1 2
+    pmap.push(test[0].label, test[0].element); // 1 2 3
+    pmap.push(test[9].label, test[9].element); // 2 3
+    pmap.push(test[1].label, test[1].element); // 1 3 2
+    pmap.push(test[6].label, test[6].element); // 1 2
+    pmap.push(test[10].label, test[10].element); // 3 1
+    pmap.push(test[8].label, test[8].element); // 2 1
+    pmap.push(test[18].label, test[18].element); // 1 2 1
+    int actual = 0;
+    int expected = 2;
+    for (auto it = pmap.begin(); it != pmap.end(); ++it) {
+        if (it.get_key() == vlabel)
+            ++actual;
+    }
+    print(v, "2: iterator_gets(): vector.size() == 2", expected, actual);
+    pmap.clear();
+}
+
 
 int main(int argc, char** argv) {
     bool verbose = false;
@@ -456,5 +510,6 @@ int main(int argc, char** argv) {
     iterator_memory(verbose);
     iterator_functs(verbose);
     iterator_loops(verbose);
+    iterator_gets(verbose);
     return 0;
 }
