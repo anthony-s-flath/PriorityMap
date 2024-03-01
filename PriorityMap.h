@@ -78,6 +78,7 @@ public:
     Iterator begin(vector<Key> &key);
     Iterator end(vector<Key> &key);
 };
+ 
 
 /*
 
@@ -178,6 +179,7 @@ PriorityMap<Key, Element>::Iterator::Iterator(const Iterator& iterator) {
     owner = iterator.owner;
     elmt_itr = iterator.elmt_itr;
     pmap_itr = iterator.pmap_itr;
+    base = iterator.base;
     if (iterator.next_itr)
         next_itr = new Iterator(iterator.next_itr->owner, iterator.next_itr->elmt_itr, iterator.next_itr->pmap_itr);
     else
