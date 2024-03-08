@@ -31,8 +31,9 @@ public:
 
     void push(vector<Key> &label, Element elmt);
     
-    bool contains(vector<Key> &label) const;
+    bool contains(const vector<Key> &label) const;
     size_t size() const;
+    size_t size(const vector<Key> &label) const;
     void clear();
 
 
@@ -75,8 +76,8 @@ public:
     
     Iterator begin();
     Iterator end();
-    Iterator begin(vector<Key> &key);
-    Iterator end(vector<Key> &key);
+    Iterator begin(const vector<Key> &key);
+    Iterator end(const vector<Key> &key);
 };
  
 
@@ -94,9 +95,7 @@ PriorityMap<Key, Element>::~PriorityMap<Key, Element>() {
 
 template <typename Key, typename Element>
 void PriorityMap<Key, Element>::push(vector<Key> &label, Element elmt) {
-    if (label.empty()) {
-        return;
-    } else if (label.size() == level) { // this is pmap to push elmt
+    if (label.size() == level) { // this is pmap to push elmt
         elements.push_back(elmt);
     } else if (pmaps.count(label[level])) { // next pmap exists
         pmaps[label[level]]->push(label, elmt);
@@ -108,10 +107,8 @@ void PriorityMap<Key, Element>::push(vector<Key> &label, Element elmt) {
 }
 
 template <typename Key, typename Element>
-bool PriorityMap<Key, Element>::contains(vector<Key> &label) const {
-    if (label.empty())
-        return false;
-    else if (level < label.size() && pmaps.count(label[level]))
+bool PriorityMap<Key, Element>::contains(const vector<Key> &label) const {
+    if (level < label.size() && pmaps.count(label[level]))
         return pmaps.at(label[level])->contains(label);
     else 
         return level == label.size();
@@ -123,6 +120,15 @@ size_t PriorityMap<Key, Element>::size() const {
     for (const auto& [key, pmap] : pmaps)
         total += pmap->size();
     return total;
+}
+
+template <typename Key, typename Element>
+size_t PriorityMap<Key, Element>::size(const vector<Key> &label) const {
+    if (level < label.size()) {
+        return pmaps.count(label[level]) ? pmaps.at(label[level])->size(label) : 0;
+    } else {
+        return size();
+    }
 }
 
 template <typename Key, typename Element>
@@ -144,10 +150,8 @@ typename PriorityMap<Key, Element>::Iterator PriorityMap<Key, Element>::end() {
 }
 
 template <typename Key, typename Element>
-typename PriorityMap<Key, Element>::Iterator PriorityMap<Key, Element>::begin(vector<Key> &label) {
-    if (label.empty())
-        return end();
-    else if (level == label.size()) // last label
+typename PriorityMap<Key, Element>::Iterator PriorityMap<Key, Element>::begin(const vector<Key> &label) {
+    if (level == label.size()) // last label
         return Iterator(this, elements.begin(), pmaps.begin());
     else if (level < label.size() && pmaps.count(label[level])) // not last label
         return pmaps.at(label[level])->begin(label);
@@ -156,10 +160,8 @@ typename PriorityMap<Key, Element>::Iterator PriorityMap<Key, Element>::begin(ve
 }
 
 template <typename Key, typename Element>
-typename PriorityMap<Key, Element>::Iterator PriorityMap<Key, Element>::end(vector<Key> &label) {
-    if (label.empty())
-        return end();
-    else if (level == label.size()) // last label
+typename PriorityMap<Key, Element>::Iterator PriorityMap<Key, Element>::end(const vector<Key> &label) {
+    if (level == label.size()) // last label
         return Iterator(this, elements.end(), pmaps.end());
     else if (level < label.size() && pmaps.count(label[level])) // not last label
         return pmaps.at(label[level])->end(label);
