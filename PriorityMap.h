@@ -263,20 +263,24 @@ typename PriorityMap<Key, Element>::Iterator& PriorityMap<Key, Element>::Iterato
 
 template <typename Key, typename Element>
 bool PriorityMap<Key, Element>::Iterator::operator==(Iterator rhs) const {
-    bool equal;
-    if (next_itr && rhs.next_itr) {
-        equal = *next_itr == *(rhs.next_itr);
-    } else if (!next_itr && !rhs.next_itr) {
-        equal = true;
-    } else {
-        equal = false;
+    if ((next_itr && !rhs.next_itr) || (!next_itr && rhs.next_itr)) {
+        return false;
+    } else if (next_itr && *next_itr != *(rhs.next_itr)) {
+        return false;
     }
-    return elmt_itr == rhs.elmt_itr && pmap_itr == rhs.pmap_itr && equal;
+
+    return elmt_itr == rhs.elmt_itr && pmap_itr == rhs.pmap_itr;
 }
 
 template <typename Key, typename Element>
 bool PriorityMap<Key, Element>::Iterator::operator!=(Iterator rhs) const {
-    return elmt_itr != rhs.elmt_itr || pmap_itr != rhs.pmap_itr || next_itr != rhs.next_itr;
+    if (elmt_itr != rhs.elmt_itr || pmap_itr != rhs.pmap_itr) {
+        return true;
+    } else if ((next_itr && !rhs.next_itr) || (!next_itr && rhs.next_itr)) {
+        return true;
+    }
+
+    return next_itr ? *next_itr != *(rhs.next_itr) : false;
 }
 
 template <typename Key, typename Element>
