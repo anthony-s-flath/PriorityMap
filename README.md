@@ -1,4 +1,4 @@
 # PriorityMap
 Container that iterates over Elements under one or more Keys.
 
-Iterators over given Key, and all sub-Keys based on PriorityMap::begin(vector\<Key\>)
+![PriorityMap](https://github.com/user-attachments/assets/0a2f9c35-506c-499e-81d8-3214612384c7)
